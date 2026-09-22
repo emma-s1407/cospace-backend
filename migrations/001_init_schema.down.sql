@@ -1,0 +1,9 @@
+DROP TABLE Bookings;
+
+DROP TABLE Users;
+
+DROP TABLE Rooms;
+
+DROP TABLE Desks;
+
+DROP TABLE Teams;
