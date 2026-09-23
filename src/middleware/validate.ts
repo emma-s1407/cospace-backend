@@ -1,19 +1,23 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodSchema, ZodError } from "zod";
 
-export const validate =
-  (requiredFields: string[]) =>
+export const validateSchema =
+  (schema: ZodSchema) =>
   (req: Request, res: Response, next: NextFunction): void => {
-    const missingFields = requiredFields.filter(
-      (field) => req.body[field] === undefined
-    );
+    try {
+      req.body = schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          message: "Validation failed",
+          errors: error.flatten().fieldErrors,
+        });
+        return;
+      }
 
-    if (missingFields.length > 0) {
       res.status(400).json({
-        message: "Bad Request",
-        missingFields,
+        message: "Invalid request data",
       });
-      return;
     }
-
-    next();
   };
